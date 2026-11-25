@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DIMF Prototype — Synthetic Demo</title>
+<style>
+  :root {
+    --bg: #0e1420;
+    --panel: #162031;
+    --panel2: #1b2940;
+    --line: #2a3a55;
+    --text: #e7eef9;
+    --muted: #91a4c0;
+    --accent: #4da3ff;
+    --good: #35d07f;
+    --bad: #ff5d6c;
+    --warn: #ffc857;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  header { padding: 18px 24px 12px; border-bottom: 1px solid var(--line);
+           display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
+  h1 { font-size: 20px; margin: 0; letter-spacing: .2px; }
+  h2 { font-size: 14px; margin: 0 0 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+  h3 { font-size: 13px; margin: 12px 0 6px; color: var(--muted); }
+  .tag { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 999px;
+         background: #42351b; color: var(--warn); border: 1px solid #6b572a; }
+  .sub { color: var(--muted); font-size: 12px; }
+  .wrap { padding: 18px; display: grid; gap: 16px;
+          grid-template-columns: repeat(12, minmax(0, 1fr)); }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; min-width: 0; }
+  .span-4 { grid-column: span 4; } .span-5 { grid-column: span 5; }
+  .span-6 { grid-column: span 6; } .span-7 { grid-column: span 7; }
+  .span-8 { grid-column: span 8; } .span-12 { grid-column: span 12; }
+  @media (max-width: 1000px) { .span-4,.span-5,.span-6,.span-7,.span-8 { grid-column: span 12; } }
+  label { display: block; font-size: 12px; color: var(--muted); margin: 8px 0 4px; }
+  input, select, button, textarea { font: inherit; }
+  input, select { width: 100%; padding: 8px 9px; border-radius: 7px; border: 1px solid var(--line);
+                  background: #0c1320; color: var(--text); }
+  button { padding: 8px 12px; border-radius: 7px; border: 1px solid var(--line);
+           background: var(--panel2); color: var(--text); cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  button.primary { background: #1d5fb0; border-color: #2f7bd4; }
+  button.danger { background: #5a1f28; border-color: #8f3140; }
+  button.good { background: #164c34; border-color: #257a51; }
+  button.small { padding: 4px 8px; font-size: 12px; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .row > * { flex: 1 1 auto; }
+  .row .fixed { flex: 0 0 auto; }
+  .stats { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+  .stat { background: var(--panel2); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; }
+  .stat b { display: block; font-size: 17px; font-family: var(--mono); }
+  .stat span { font-size: 11px; color: var(--muted); }
+  .mono { font-family: var(--mono); font-size: 12px; word-break: break-all; }
+  .muted { color: var(--muted); }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th, td { text-align: left; padding: 6px 7px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
+  tr:last-child td { border-bottom: none; }
+  .pill { display: inline-block; padding: 2px 7px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+  .pill.A { background: #1d3a5c; color: #8dc4ff; }
+  .pill.B { background: #3c2f57; color: #c4a8ff; }
+  .pill.C { background: #4a3021; color: #ffc08d; }
+  .pill.ok { background: #164c34; color: var(--good); }
+  .pill.bad { background: #5a1f28; color: var(--bad); }
+  .pill.warn { background: #42351b; color: var(--warn); }
+  .node { border: 1px solid var(--line); border-radius: 8px; padding: 8px; background: var(--panel2); min-width: 150px; flex: 1; }
+  .node.dead { border-color: #8f3140; opacity: .75; }
+  .node.byz { border-color: #8f6b21; }
+  .node .top { display: flex; justify-content: space-between; gap: 6px; font-size: 12px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+  .dot.green { background: var(--good); } .dot.red { background: var(--bad); } .dot.yellow { background: var(--warn); }
+  pre { background: #0b111c; border: 1px solid var(--line); border-radius: 8px; padding: 10px;
+        margin: 8px 0; max-height: 240px; overflow: auto; white-space: pre-wrap; word-break: break-all;
+        font-family: var(--mono); font-size: 11px; }
+  .verdict { font-size: 18px; font-weight: 800; letter-spacing: .06em; padding: 10px 12px; border-radius: 8px;
+             border: 1px solid var(--line); background: var(--panel2); margin: 8px 0; }
+  .verdict.valid { color: var(--good); border-color: #257a51; background: #102c20; }
+  .verdict.invalid { color: var(--bad); border-color: #8f3140; background: #2b1218; }
+  .verdict.pending { color: var(--warn); }
+  #toast { position: fixed; right: 18px; bottom: 18px; max-width: 520px; padding: 12px 14px; border-radius: 8px;
+           background: #1c2b42; border: 1px solid var(--line); box-shadow: 0 8px 26px #0008; display: none; z-index: 20; }
+  #toast.err { border-color: #8f3140; background: #2b1218; }
+  #toast.good { border-color: #257a51; background: #102c20; }
+  .scroll { max-height: 320px; overflow: auto; }
+  footer { padding: 14px 24px 26px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+  .kv { display: grid; grid-template-columns: 130px 1fr; gap: 4px 10px; font-size: 12px; }
+  .kv div:nth-child(odd) { color: var(--muted); }
+  .checks { list-style: none; padding: 0; margin: 8px 0; font-size: 12px; }
+  .checks li { margin: 4px 0; }
+  .ok { color: var(--good); } .no { color: var(--bad); }
+</style>
+</head>
+<body>
+<header>
+  <h1>DIMF prototype</h1>
+  <span class="tag">SYNTHETIC DATA — NOT PRODUCTION</span>
+  <span class="sub">Four-layer demo: L1 placement · L2 CRDT/Raft/PBFT · L3 signed Merkle log + anchoring · L4 identity/policy</span>
+  <span class="sub" id="health" style="margin-left:auto">connecting…</span>
+</header>
+
+<div class="wrap">
+  <!-- submit -->
+  <section class="panel span-4">
+    <h2>Submit a synthetic record</h2>
+    <label for="agency">Agency identity (Ed25519)</label>
+    <select id="agency"></select>
+    <label for="dclass">Data class → synchronisation mechanism</label>
+    <select id="dclass">
+      <option value="A">A · monitoring → CRDT (no coordination)</option>
+      <option value="B">B · single authority → Raft</option>
+      <option value="C">C · shared fund → PBFT (n=4, f=1)</option>
+    </select>
+    <label for="beneficiary">Beneficiary id (pseudonymous, synthetic)</label>
+    <input id="beneficiary" value="SYNTH-BEN-10001">
+    <label for="scheme">Scheme (synthetic)</label>
+    <input id="scheme" value="SYNTH-HOUSING">
+    <label for="amount">Amount (paise, integer)</label>
+    <input id="amount" type="number" value="250000">
+    <label><input type="checkbox" id="withdoc" style="width:auto"> attach a small off-chain document</label>
+    <div class="row" style="margin-top:12px">
+      <button class="primary" id="submitBtn">Sign &amp; submit</button>
+    </div>
+    <div id="submitResult" class="sub" style="margin-top:10px"></div>
+    <h3>Policy (server-enforced)</h3>
+    <div id="policyBox" class="mono muted">loading…</div>
+  </section>
+
+  <!-- log + anchors -->
+  <section class="panel span-4">
+    <h2>Authenticated log &amp; anchoring</h2>
+    <div class="stats">
+      <div class="stat"><b id="treeSize">—</b><span>records in log (tree size)</span></div>
+      <div class="stat"><b id="ledgerTx">—</b><span>audited ledger transactions</span></div>
+      <div class="stat"><b id="anchorCount">—</b><span>anchors written</span></div>
+      <div class="stat"><b id="pendingCount">—</b><span>waiting to be anchored</span></div>
+    </div>
+    <label>latest signed root (Ed25519 tree head)</label>
+    <div class="mono" id="latestRoot">—</div>
+    <div class="sub" id="batchInfo" style="margin-top:6px"></div>
+    <h3>Recent anchors (only roots go to the ledger)</h3>
+    <div class="scroll">
+      <table><thead><tr><th>tree size</th><th>root</th><th>ledger tx</th><th>latency</th></tr></thead>
+      <tbody id="anchorsBody"><tr><td colspan="4" class="muted">no anchors yet</td></tr></tbody></table>
+    </div>
+  </section>
+
+  <!-- metrics -->
+  <section class="panel span-4">
+    <h2>Evaluation plane</h2>
+    <div class="stats">
+      <div class="stat"><b id="throughput">—</b><span>records/s (process lifetime)</span></div>
+      <div class="stat"><b id="p95">—</b><span>end-to-end p95 latency</span></div>
+      <div class="stat"><b id="p50">—</b><span>end-to-end p50 latency</span></div>
+      <div class="stat"><b id="proofInfo">—</b><span>proof size (last/browser)</span></div>
+    </div>
+    <h3>Messages per committed entry (sampled)</h3>
+    <div class="kv" id="msgPerEntry"><div>A</div><div>—</div><div>B</div><div>—</div><div>C</div><div>—</div></div>
+    <h3>Network message counters</h3>
+    <div class="mono muted" id="msgCounters">—</div>
+    <h3>Audit delay</h3>
+    <div class="kv" id="auditBox"><div>p50</div><div>—</div><div>p95</div><div>—</div></div>
+  </section>
+
+  <!-- cluster -->
+  <section class="panel span-12">
+    <h2>L2 cluster control</h2>
+    <div class="row" style="margin-bottom:10px">
+      <button class="fixed danger small" id="killLeader">Kill Raft leader</button>
+      <button class="fixed good small" id="recoverAll">Recover all crashed nodes</button>
+      <button class="fixed small" id="partitionRaft">Partition Raft (leader | rest)</button>
+      <button class="fixed small" id="partitionAll">Partition all classes</button>
+      <button class="fixed small" id="healNetwork">Heal network</button>
+      <button class="fixed small" id="toggleByz">Toggle PBFT Byzantine backup</button>
+      <span class="sub" id="faultInfo"></span>
+    </div>
+    <h3>Class A — CRDT replicas (gossip, zero write coordination)</h3>
+    <div class="row" id="crdtNodes"></div>
+    <h3>Class B — Raft (crash-fault replicated log)</h3>
+    <div class="row" id="raftNodes"></div>
+    <h3>Class C — PBFT (n=4, f=1; one Byzantine backup can be toggled)</h3>
+    <div class="row" id="pbftNodes"></div>
+  </section>
+
+  <!-- records -->
+  <section class="panel span-7">
+    <h2>Recent records</h2>
+    <div class="scroll">
+      <table><thead><tr><th>#</th><th>record id</th><th>class</th><th>agency</th><th>anchored</th><th></th></tr></thead>
+      <tbody id="recordsBody"><tr><td colspan="6" class="muted">loading…</td></tr></tbody></table>
+    </div>
+    <div class="sub" style="margin-top:8px">“Tamper” edits the stored SQLite record only; the Merkle tree and signed head are unchanged, so the auditor check must turn red.</div>
+  </section>
+
+  <!-- auditor -->
+  <section class="panel span-5">
+    <h2>Auditor (independent browser verification)</h2>
+    <label for="auditRecord">Choose a record</label>
+    <select id="auditRecord"></select>
+    <div class="row" style="margin-top:10px">
+      <button class="primary fixed" id="auditBtn">Fetch proof &amp; verify</button>
+      <button class="fixed" id="auditTamper">Tamper this record</button>
+    </div>
+    <div id="verdict" class="verdict pending">NO PROOF YET</div>
+    <ul class="checks" id="auditChecks"></ul>
+    <div class="kv" id="auditMeta"><div>index</div><div>—</div><div>tree size</div><div>—</div><div>proof hashes</div><div>—</div></div>
+    <h3>Canonical JSON regenerated in the browser</h3>
+    <pre id="auditCanonical">—</pre>
+    <h3>Merkle audit path</h3>
+    <pre id="auditProof">—</pre>
+    <h3>Root / anchor</h3>
+    <div class="mono" id="auditRoot">—</div>
+  </section>
+</div>
+
+<footer>
+  <b>SYNTHETIC DATA ONLY.</b> This is a research prototype for a B.Tech viva: nodes are asyncio objects in one process over a simulated network.
+  It is not production software, not a real government system, and not a benchmark of real deployments. No external CDN is used.
+</footer>
+
+<div id="toast"></div>
+
+<script>
+"use strict";
+
+const $ = (id) => document.getElementById(id);
+const enc = new TextEncoder();
+let latestRecords = [];
+let latestAnchors = [];
+let lastProof = null;
+
+function toast(msg, kind) {
+  const el = $("toast");
+  el.textContent = msg;
+  el.className = kind || "";
+  el.style.display = "block";
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.style.display = "none"; }, 4500);
+}
+
+async function api(path, options) {
+  const res = await fetch(path, Object.assign({ headers: { "Content-Type": "application/json" } }, options || {}));
+  let body = null;
+  try { body = await res.json(); } catch (e) { body = null; }
+  if (!res.ok) {
+    const detail = body && (body.detail || body.error) ? (body.detail || body.error) : ("HTTP " + res.status);
+    throw new Error(typeof detail === "string" ? detail : JSON.stringify(detail));
+  }
+  return body;
+}
+
+function esc(value) {
+  return String(value == null ? "" : value)
+    .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;").replaceAll("'", "&#39;");
+}
+const short = (hex, n) => hex ? hex.slice(0, n || 16) + "…" : "—";
+const fmtMs = (x) => (x == null ? "—" : Number(x).toFixed(2) + " ms");
+const fmtNum = (x) => (x == null ? "—" : Number(x).toLocaleString());
+
+// ---- canonical JSON identical to Python's sort_keys/separators ----
+function canonicalize(value) {
+  if (Array.isArray(value)) return value.map(canonicalize);
+  if (value && typeof value === "object") {
+    const out = {};
+    Object.keys(value).sort().forEach((k) => { out[k] = canonicalize(value[k]); });
+    return out;
+  }
+  return value;
+}
+function canonicalJson(value) { return JSON.stringify(canonicalize(value)); }
+
+function hexToBytes(hex) {
+  if (hex.length % 2) throw new Error("odd hex length");
+  const out = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < out.length; i++) out[i] = parseInt(hex.slice(i * 2, i * 2 + 2), 16);
+  return out;
+}
+function bytesToHex(bytes) {
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+}
+function concatBytes(...parts) {
+  const total = parts.reduce((n, p) => n + p.length, 0);
+  const out = new Uint8Array(total);
+  let off = 0;
+  for (const p of parts) { out.set(p, off); off += p.length; }
+  return out;
+}
+async function sha256(bytes) {
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return new Uint8Array(digest);
+}
+async function leafHash(canonical) {
+  return sha256(concatBytes(new Uint8Array([0]), enc.encode(canonical)));
+}
+async function nodeHash(left, right) {
+  return sha256(concatBytes(new Uint8Array([1]), left, right));
+}
+
+// RFC 6962 / RFC 9162 inclusion verifier, implemented in the browser.
+async function verifyInclusionBrowser(leafHex, index, size, proofHex, rootHex) {
+  if (!(size > 0) || index < 0 || index >= size) return { valid: false, computed: "" };
+  let fn = BigInt(index), sn = BigInt(size - 1);
+  let r = hexToBytes(leafHex);
+  for (const phex of proofHex) {
+    if (sn === 0n) return { valid: false, computed: bytesToHex(r) };
+    const p = hexToBytes(phex);
+    if ((fn & 1n) === 1n || fn === sn) {
+      r = await nodeHash(p, r);
+      if ((fn & 1n) === 0n) {
+        while (fn !== 0n && (fn & 1n) === 0n) { fn >>= 1n; sn >>= 1n; }
+      }
+    } else {
+      r = await nodeHash(r, p);
+    }
+    fn >>= 1n; sn >>= 1n;
+  }
+  const computed = bytesToHex(r);
+  return { valid: sn === 0n && computed === rootHex.toLowerCase(), computed };
+}
+
+// ---------------- periodic refresh ----------------
+async function refreshLog() {
+  try {
+    const stats = await api("/log/stats");
+    $("treeSize").textContent = fmtNum(stats.tree_size);
+    $("ledgerTx").textContent = fmtNum(stats.ledger_transactions);
+    $("anchorCount").textContent = fmtNum(stats.anchors);
+    $("pendingCount").textContent = fmtNum(stats.pending);
+    $("latestRoot").textContent = stats.root;
+    $("batchInfo").textContent = "anchor every b=" + stats.anchor_batch +
+      " records · ledger backend: " + stats.ledger_backend +
+      " · last anchored size: " + stats.last_anchor_size;
+  } catch (e) { $("health").textContent = "log unreachable: " + e.message; }
+}
+
+async function refreshAnchors() {
+  try {
+    const data = await api("/ledger/anchors?limit=8");
+    latestAnchors = data.anchors || [];
+    const body = $("anchorsBody");
+    if (!latestAnchors.length) {
+      body.innerHTML = '<tr><td colspan="4" class="muted">no anchors yet (submit b records or wait for the seeded run)</td></tr>';
+      return;
+    }
+    body.innerHTML = latestAnchors.map((a) =>
+      "<tr><td>" + fmtNum(a.tree_size) + "</td><td class='mono' title='" + esc(a.root) + "'>" + esc(short(a.root, 16)) +
+      "</td><td class='mono'>" + esc(String(a.ledger_tx_id).slice(0, 18)) + "</td><td>" + fmtMs(a.ledger_latency_ms) + "</td></tr>"
+    ).join("");
+  } catch (e) { /* keep the panel */ }
+}
+
+async function refreshMetrics() {
+  try {
+    const m = await api("/metrics");
+    $("throughput").textContent = (m.throughput_records_per_s || 0).toFixed(2) + " /s";
+    const lat = (m.latencies_ms && m.latencies_ms.overall) || {};
+    $("p50").textContent = fmtMs(lat.p50);
+    $("p95").textContent = fmtMs(lat.p95);
+    const mpe = m.messages_per_entry || {};
+    const cells = [["A", mpe.A], ["B", mpe.B], ["C", mpe.C]].map(([k, v]) =>
+      "<div>" + k + "</div><div>" + (v && v.count ? ("avg " + v.count.toFixed(0) + " · p95 " + v.p95.toFixed(0) + " msgs") : "—") + "</div>"
+    ).join("");
+    $("msgPerEntry").innerHTML = cells;
+    const msg = m.messages || {};
+    $("msgCounters").textContent = Object.keys(msg).sort().map((k) =>
+      k + ": sent " + (msg[k].sent || 0) + ", delivered " + (msg[k].delivered || 0) + ", dropped " + (msg[k].dropped || 0)
+    ).join("\n") || "—";
+    const audit = m.audit || {};
+    $("auditBox").innerHTML = "<div>p50</div><div>" + fmtMs(audit.p50) + "</div><div>p95</div><div>" + fmtMs(audit.p95) + "</div>";
+  } catch (e) { /* ignore */ }
+}
+
+function nodeCard(name, alive, sub, extraClass) {
+  return '<div class="node ' + (alive ? "" : "dead") + " " + (extraClass || "") + '">' +
+    '<div class="top"><span><span class="dot ' + (alive ? "green" : "red") + '"></span>' + esc(name) + '</span>' +
+    '<span class="muted">' + (alive ? "alive" : "crashed") + '</span></div>' +
+    '<div class="sub">' + sub + '</div></div>';
+}
+
+async function refreshCluster() {
+  try {
+    const s = await api("/cluster/status");
+    const aNodes = (s.A && s.A.replicas) || [];
+    $("crdtNodes").innerHTML = aNodes.map((n) =>
+      nodeCard(n.node, n.alive, "gossip rounds " + n.gossip_rounds + " · local A writes " + n.records_a, "")
+    ).join("");
+    const bNodes = (s.B && s.B.nodes) || [];
+    $("raftNodes").innerHTML = bNodes.map((n) =>
+      nodeCard(n.node, n.alive,
+        "role <b>" + esc(n.role) + "</b> · term " + n.term + " · log " + n.log_length + " · commit " + n.commit_index +
+        (n.node === (s.B && s.B.leader) ? " · <span class='ok'>LEADER</span>" : ""), "")
+    ).join("");
+    const cNodes = (s.C && s.C.nodes) || [];
+    $("pbftNodes").innerHTML = cNodes.map((n) =>
+      nodeCard(n.node, n.alive,
+        (n.node === (s.C && s.C.primary) ? "PRIMARY · " : "backup · ") + "committed " + n.committed +
+        (n.byzantine ? " · <span class='no'>BYZANTINE (" + esc(n.byzantine_mode || "silent") + ")</span>" : ""),
+        n.byzantine ? "byz" : "")
+    ).join("");
+    $("health").textContent = "live · Raft leader: " + ((s.B && s.B.leader) || "electing…") +
+      " · tree size " + ((s.log && s.log.tree_size) || 0);
+  } catch (e) { $("health").textContent = "cluster unreachable: " + e.message; }
+}
+
+async function refreshRecords() {
+  try {
+    const data = await api("/demo/records?limit=25");
+    latestRecords = data.records || [];
+    const body = $("recordsBody");
+    if (!latestRecords.length) { body.innerHTML = '<tr><td colspan="6" class="muted">no records yet</td></tr>'; return; }
+    body.innerHTML = latestRecords.map((r) =>
+      "<tr><td>" + r.seq + "</td><td class='mono'>" + esc(r.record_id) + "</td>" +
+      "<td><span class='pill " + esc(r.data_class) + "'>" + esc(r.data_class) + "</span></td>" +
+      "<td>" + esc(r.agency) + "</td>" +
+      "<td>" + (r.anchored ? "<span class='pill ok'>anchored</span>" : "<span class='pill warn'>pending</span>") + "</td>" +
+      "<td><button class='small' data-verify='" + esc(r.record_id) + "'>Verify</button> " +
+      "<button class='small danger' data-tamper='" + esc(r.record_id) + "'>Tamper</button></td></tr>"
+    ).join("");
+    body.querySelectorAll("button[data-verify]").forEach((b) =>
+      b.addEventListener("click", () => { $("auditRecord").value = b.dataset.verify; verifySelected(); }));
+    body.querySelectorAll("button[data-tamper]").forEach((b) =>
+      b.addEventListener("click", () => tamper(b.dataset.tamper)));
+
+    const select = $("auditRecord");
+    const current = select.value;
+    select.innerHTML = latestRecords.map((r) =>
+      "<option value='" + esc(r.record_id) + "'>" + esc(r.record_id) + " · class " + esc(r.data_class) +
+      " · " + esc(r.agency) + (r.anchored ? " · anchored" : " · pending") + "</option>").join("");
+    if (current && latestRecords.some((r) => r.record_id === current)) select.value = current;
+  } catch (e) { /* ignore */ }
+}
+
+async function refreshAgencies() {
+  try {
+    const data = await api("/demo/agencies");
+    const select = $("agency");
+    const current = select.value;
+    select.innerHTML = (data.members || []).map((m) =>
+      "<option value='" + esc(m.agency_id) + "'>" + esc(m.agency_id) + " — " + esc(m.name) + "</option>").join("");
+    if (current) select.value = current;
+    $("policyBox").textContent = Object.keys(data.policy || {}).sort().map((agency) =>
+      agency + " → " + data.policy[agency].join(", ")).join("\n");
+  } catch (e) { /* ignore */ }
+}
+
+async function refreshAll() {
+  await Promise.allSettled([refreshLog(), refreshAnchors(), refreshMetrics(), refreshCluster(), refreshRecords()]);
+}
+
+// ---------------- actions ----------------
+async function submitRecord() {
+  const body = {
+    agency: $("agency").value,
+    data_class: $("dclass").value,
+    with_document: $("withdoc").checked,
+    payload: {
+      beneficiary_id: $("beneficiary").value,
+      scheme: $("scheme").value,
+      amount_paise: parseInt($("amount").value || "0", 10),
+      district: "SYNTH-DISTRICT-A",
+      note: "SYNTHETIC dashboard record; not real government data",
+    },
+  };
+  $("submitBtn").disabled = true;
+  try {
+    const out = await api("/demo/submit", { method: "POST", body: JSON.stringify(body) });
+    $("submitResult").innerHTML = "committed <b>" + esc(out.record_id) + "</b> via <b>" + esc(out.protocol) +
+      "</b> · log index " + out.log_index + " · " + out.latency_ms + " ms · " +
+      (out.anchored ? "anchor written" : "anchor pending");
+    toast("Record committed: " + out.record_id, "good");
+    await refreshAll();
+    $("auditRecord").value = out.record_id;
+  } catch (e) {
+    $("submitResult").textContent = "rejected: " + e.message;
+    toast("Submit failed: " + e.message, "err");
+  } finally { $("submitBtn").disabled = false; }
+}
+
+async function verifySelected() {
+  const id = $("auditRecord").value;
+  if (!id) { toast("No record selected", "err"); return; }
+  $("verdict").className = "verdict pending";
+  $("verdict").textContent = "FETCHING PROOF…";
+  try {
+    const proof = await api("/log/proof/" + encodeURIComponent(id));
+    lastProof = proof;
+    if (!proof.record) throw new Error("stored record is not valid JSON");
+    const canonical = canonicalJson(proof.record);
+    const leaf = bytesToHex(await leafHash(canonical));
+    const result = await verifyInclusionBrowser(leaf, proof.index, proof.size, proof.proof, proof.root);
+    const anchor = latestAnchors.find((a) => Number(a.tree_size) === Number(proof.size));
+    const rootAnchored = anchor ? (String(anchor.root).toLowerCase() === String(proof.root).toLowerCase()) : null;
+    const valid = result.valid;
+    $("verdict").className = "verdict " + (valid ? "valid" : "invalid");
+    $("verdict").textContent = valid ? "VALID — RECORD INCLUDED" : "INVALID — PROOF FAILS";
+    const checks = [];
+    checks.push("<li class='" + (valid ? "ok" : "no") + "'>" + (valid ? "✓" : "✗") +
+      " browser recomputed leaf and root from the record (SHA-256 via Web Crypto)</li>");
+    checks.push("<li class='" + (valid ? "ok" : "no") + "'>" + (valid ? "✓" : "✗") +
+      " server-side verification agrees: " + esc(proof.verification ? proof.verification.reason : "n/a") + "</li>");
+    if (rootAnchored === true) checks.push("<li class='ok'>✓ root matches anchor at tree size " + proof.size + " (ledger tx " + esc(anchor.ledger_tx_id) + ")</li>");
+    else if (rootAnchored === false) checks.push("<li class='no'>✗ root does NOT match the anchor for tree size " + proof.size + "</li>");
+    else checks.push("<li class='ok' style='color:var(--warn)'>• no anchor yet for tree size " + proof.size + " (audit delay pending)</li>");
+    if (canonical !== proof.canonical) checks.push("<li class='no'>✗ canonical JSON regenerated in browser differs from server canonical string</li>");
+    else checks.push("<li class='ok'>✓ browser canonical JSON matches the server's canonical string</li>");
+    $("auditChecks").innerHTML = checks.join("");
+    $("auditMeta").innerHTML =
+      "<div>index</div><div>" + proof.index + "</div>" +
+      "<div>tree size</div><div>" + proof.size + "</div>" +
+      "<div>proof hashes</div><div>" + proof.proof.length + " (" + (proof.proof.length * 32) + " bytes)</div>";
+    $("auditCanonical").textContent = canonical;
+    $("auditProof").textContent = JSON.stringify(proof.proof, null, 2);
+    $("auditRoot").textContent = "root: " + proof.root + "\ncomputed: " + result.computed +
+      "\nanchor: " + (anchor ? (anchor.ledger_tx_id + " @ size " + anchor.tree_size) : "not yet anchored");
+    $("proofInfo").textContent = proof.proof.length * 32 + " B / " + proof.proof.length + " hashes";
+  } catch (e) {
+    $("verdict").className = "verdict invalid";
+    $("verdict").textContent = "ERROR — " + e.message;
+    toast("Verification failed: " + e.message, "err");
+  }
+}
+
+async function tamper(id) {
+  try {
+    const out = await api("/demo/tamper/" + encodeURIComponent(id), { method: "POST" });
+    toast("Stored record " + id + " tampered (demo only). Inclusion valid: " + out.inclusion_valid_after_tamper, "err");
+    await refreshAll();
+    $("auditRecord").value = id;
+    await verifySelected();
+  } catch (e) { toast("Tamper failed: " + e.message, "err"); }
+}
+
+async function fault(action, extra) {
+  try {
+    const out = await api("/cluster/fault", { method: "POST", body: JSON.stringify(Object.assign({ action: action }, extra || {})) });
+    $("faultInfo").textContent = action + ": " + JSON.stringify(out);
+    toast("Fault injected: " + action, "good");
+    await refreshAll();
+  } catch (e) { toast("Fault failed: " + e.message, "err"); }
+}
+
+// ---------------- wiring ----------------
+$("submitBtn").addEventListener("click", submitRecord);
+$("auditBtn").addEventListener("click", verifySelected);
+$("auditTamper").addEventListener("click", () => {
+  const id = $("auditRecord").value;
+  if (id) tamper(id);
+});
+$("dclass").addEventListener("change", () => {
+  if ($("dclass").value === "B") $("agency").value = "agency-1";
+});
+$("killLeader").addEventListener("click", async () => {
+  const s = await api("/cluster/status");
+  const leader = s.B && s.B.leader;
+  if (!leader) { toast("No Raft leader to kill", "err"); return; }
+  await fault("crash", { node: leader, data_class: "B" });
+});
+$("recoverAll").addEventListener("click", async () => {
+  const s = await api("/cluster/status");
+  const dead = [];
+  [...(s.B.nodes || []), ...(s.C.nodes || []), ...(s.A.replicas || [])].forEach((n) => {
+    if (!n.alive) dead.push(n.node);
+  });
+  for (const node of dead) await fault("recover", { node: node });
+  if (!dead.length) toast("No crashed nodes", "good");
+});
+$("partitionRaft").addEventListener("click", () => fault("partition", { data_class: "B" }));
+$("partitionAll").addEventListener("click", () => fault("partition", {}));
+$("healNetwork").addEventListener("click", () => fault("heal", {}));
+$("toggleByz").addEventListener("click", async () => {
+  const s = await api("/cluster/status");
+  const nodes = (s.C && s.C.nodes) || [];
+  const anyByz = nodes.some((n) => n.byzantine);
+  await fault("byzantine", { enabled: !anyByz });
+});
+
+(async function init() {
+  await refreshAgencies();
+  await refreshAll();
+  setInterval(refreshAll, 2000);
+})();
+</script>
+</body>
+</html>
