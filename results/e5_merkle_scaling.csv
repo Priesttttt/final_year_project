@@ -1,0 +1,7 @@
+mode,leaves,build_ms,proof_index,proof_hashes,proof_bytes,last_leaf_proof_hashes,last_leaf_proof_bytes,verify_ms_mean,expected_hashes_ceil_log2,consistency_hashes
+full,1,0.0,0,0,0,0,0,0.0006,0,0
+full,8,0.0,0,3,96,3,96,0.002,3,1
+full,1000,1.2,0,10,320,8,256,0.0068,10,9
+full,10000,11.8,0,14,448,8,256,0.0249,14,12
+full,100000,119.9,0,17,544,10,320,0.2114,17,14
+full,1000000,1201.8,0,20,640,12,384,9.5307,20,16

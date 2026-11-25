@@ -1,0 +1,72 @@
+{
+  "synthetic": true,
+  "mode": "full",
+  "generated_at": "2026-11-25T20:57:46",
+  "elapsed_s": 25.7,
+  "environment": {
+    "python": "3.14.10",
+    "platform": "Linux-6.18.63-3-lts-x86_64-with-glibc2.44",
+    "cpu_count": 16
+  },
+  "key_numbers": {
+    "e2_pbft_n7_messages": 84,
+    "e2_pbft_n7_expected": 84,
+    "e3_election_p50_ms": 178.12,
+    "e3_catchup_p50_ms": 31.976,
+    "e4_all_committed": true,
+    "e5_million_proof_hashes": 20,
+    "e5_million_proof_bytes": 640,
+    "e5_million_build_ms": 1201.8,
+    "e6_tamper": {
+      "mode": "full",
+      "records": 200,
+      "tampered": 20,
+      "detected": 20,
+      "detection_rate_pct": 100.0,
+      "clean_record_still_valid": true,
+      "recomputed_root_mismatch": true
+    }
+  },
+  "notes": {
+    "e1": {
+      "log_size": 603,
+      "ledger_transactions": 6,
+      "audit_p95_ms": 698.52,
+      "elapsed_s": 3.615
+    },
+    "e2": {
+      "pbft_n7_messages": 84,
+      "pbft_n7_expected": 84,
+      "raft_n3_messages": 4
+    },
+    "e3": {
+      "trials": 15,
+      "election_p50_ms": 178.12,
+      "election_p95_ms": 368.568,
+      "catchup_p50_ms": 31.976,
+      "all_writes_ok": true
+    },
+    "e4": {
+      "all_committed": true,
+      "all_orders_agree": true
+    },
+    "e5": {
+      "million_proof_hashes": 20,
+      "million_proof_bytes": 640,
+      "million_build_ms": 1201.8,
+      "million_verify_ms": 9.5307,
+      "million_last_leaf_hashes": 12
+    },
+    "e6": {
+      "tamper": {
+        "mode": "full",
+        "records": 200,
+        "tampered": 20,
+        "detected": 20,
+        "detection_rate_pct": 100.0,
+        "clean_record_still_valid": true,
+        "recomputed_root_mismatch": true
+      }
+    }
+  }
+}

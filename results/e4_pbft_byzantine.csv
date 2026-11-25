@@ -1,0 +1,7 @@
+mode,n,f,scenario,requests,committed,orders_agree,messages,messages_per_committed_request,normal_formula_total
+full,4,1,honest,10,10,True,240,24.0,240
+full,4,1,silent,10,10,True,180,18.0,240
+full,4,1,equivocate,10,10,True,180,18.0,240
+full,7,2,honest,10,10,True,840,84.0,840
+full,7,2,silent,10,10,True,720,72.0,840
+full,7,2,equivocate,10,10,True,720,72.0,840

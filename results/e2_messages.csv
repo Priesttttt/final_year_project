@@ -1,0 +1,8 @@
+protocol,n,scenario,messages,expected_formula,expected,matches
+raft,3,"one committed entry, heartbeats suppressed",4,2(n-1),4,True
+raft,5,"one committed entry, heartbeats suppressed",8,2(n-1),8,True
+raft,7,"one committed entry, heartbeats suppressed",12,2(n-1),12,True
+pbft,4,"one committed entry, all replicas honest",24,2n(n-1),24,True
+pbft,7,"one committed entry, all replicas honest",84,2n(n-1),84,True
+crdt,3,100 local writes (no coordination),0,0,0,True
+crdt,3,one full gossip round after writes,6,n(n-1),6,True

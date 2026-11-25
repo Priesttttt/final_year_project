@@ -1,0 +1,4 @@
+mode,anchor_batch,records,ledger_latency_ms,transactions,expected_transactions_ceil_n_over_b,pending_after_flush,audit_p50_ms,audit_p95_ms,append_total_ms,append_mean_ms
+full,1,400,2.0,400,400,0,8.43,11.277,4717.7,11.794
+full,10,400,2.0,40,40,0,22.267,51.177,1853.5,4.634
+full,100,400,2.0,4,4,0,153.716,426.477,1496.1,3.74

@@ -1,0 +1,16 @@
+mode,trial,old_leader,new_leader,new_term,election_ms,failover_append_ok,recovered_role,catchup_ms
+full,1,raft-0,raft-1,2,183.297,True,follower,34.07
+full,2,raft-0,raft-2,2,179.877,True,follower,33.002
+full,3,raft-2,raft-1,2,170.399,True,follower,31.426
+full,4,raft-0,raft-2,2,166.914,True,follower,30.963
+full,5,raft-1,raft-2,2,165.917,True,follower,31.736
+full,6,raft-1,raft-2,2,181.416,True,follower,34.506
+full,7,raft-0,raft-2,2,178.12,True,follower,31.439
+full,8,raft-0,raft-1,2,177.185,True,follower,32.655
+full,9,raft-2,raft-1,2,147.942,True,follower,31.976
+full,10,raft-1,raft-0,2,198.637,True,follower,33.615
+full,11,raft-0,raft-2,2,181.593,True,follower,33.633
+full,12,raft-1,raft-2,2,184.042,True,follower,31.794
+full,13,raft-0,raft-2,3,368.568,True,follower,28.734
+full,14,raft-1,raft-0,2,177.331,True,follower,27.584
+full,15,raft-2,raft-0,2,166.687,True,follower,33.261
