@@ -1,0 +1,17 @@
+services:
+  dimf:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      # Synthetic demo defaults; override for experiments.
+      DIMF_DATA_DIR: /app/data
+      DIMF_SEED_ON_START: "1"
+      DIMF_ANCHOR_BATCH: "10"
+      DIMF_LEDGER_BACKEND: simulated
+    volumes:
+      - dimf-data:/app/data
+    command: ["python", "scripts/run_demo.py", "--host", "0.0.0.0", "--port", "8000"]
+
+volumes:
+  dimf-data:

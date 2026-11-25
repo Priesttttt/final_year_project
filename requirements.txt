@@ -1,0 +1,11 @@
+# Pinned for Python 3.11+ on Linux, macOS and Windows.
+# Versions were selected because they ship wheels for Python 3.14 as well.
+fastapi==0.165.0
+uvicorn==0.54.0
+pydantic==2.14.4
+cryptography==50.0.2
+matplotlib==3.11.2
+numpy==2.5.5
+httpx==0.28.1
+pytest==9.2.0
+ruff==0.17.6

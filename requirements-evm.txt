@@ -1,0 +1,2 @@
+# Optional EVM ledger backend.  The default prototype does NOT need these.
+web3==7.16.0
