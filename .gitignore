@@ -1,26 +1,26 @@
-# Runtime data (synthetic only)
-data/
-results/tmp/
-results/*.sqlite3
-*.sqlite3
-*.sqlite3-wal
-*.sqlite3-shm
+# # Runtime data (synthetic only)
+# data/
+# results/tmp/
+# results/*.sqlite3
+# *.sqlite3
+# *.sqlite3-wal
+# *.sqlite3-shm
 
-# Python
-.venv/
-__pycache__/
-*.py[cod]
-.pytest_cache/
-.ruff_cache/
-*.egg-info/
-build/
-dist/
+# # Python
+# .venv/
+# __pycache__/
+# *.py[cod]
+# .pytest_cache/
+# .ruff_cache/
+# *.egg-info/
+# build/
+# dist/
 
-# OS/editor
-.DS_Store
-.idea/
-.vscode/
+# # OS/editor
+# .DS_Store
+# .idea/
+# .vscode/
 
-# Generated demo artifacts (kept intentionally: real benchmark outputs)
-results/tmp/
-!results/.gitkeep
+# # Generated demo artifacts (kept intentionally: real benchmark outputs)
+# results/tmp/
+# !results/.gitkeep

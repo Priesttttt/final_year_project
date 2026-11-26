@@ -1,0 +1,5 @@
+Metadata-Version: 2.4
+Name: dimf-prototype
+Version: 0.1.0
+Summary: Runnable small-scale prototype of the DIMF four-layer framework (synthetic data)
+Requires-Python: >=3.11
