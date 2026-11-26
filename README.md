@@ -33,7 +33,10 @@ make demo             # seeds synthetic records, serves the dashboard
 
 `make demo` prints the URL, the data directory and the demo anchor batch. Press
 `Ctrl+C` to stop. The dashboard is a single static HTML file served by FastAPI;
-it talks to the same JSON API as every other client.
+it talks to the same JSON API as every other client. It is an eight-section app
+shell — Overview, Data Records, Synchronization, Consensus Clusters,
+Verification & Audit, Ledger & Anchoring, Performance Analytics and Settings —
+with hash routing, live polling and the dependency-free browser verifier.
 
 Benchmarks:
 

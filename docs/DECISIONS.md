@@ -220,7 +220,9 @@ is unnecessary.
 build step, no external fonts.
 
 **Consequences.** Full offline operation and a visible verifier implementation.
-The UI is functional rather than polished, and all logic is in one file.
+The single file now carries an eight-section app shell, inline SVG icons and
+dependency-free Canvas charts; all UI logic still lives in that one file and
+there is no build step.
 
 ## ADR-17: modern pinned dependencies
 
